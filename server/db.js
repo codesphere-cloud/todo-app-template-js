@@ -3,10 +3,11 @@
 const fs      = require('fs');
 const prom    = require('util').promisify;
 const sqlite3 = require('sqlite3').verbose();
-const helpers = require('./helpers');
+const config  = require('server/config');
+const helpers = require('server/helpers');
 
-const dbFile = ':memory:';
-const exists = fs.existsSync(dbFile);
+const dbFile = config.DATABASE;
+const exists = (dbFile === ':memory:') ? true : fs.existsSync(dbFile);
 
 if (!exists) {
     console.error('DB file not found');
@@ -25,26 +26,24 @@ const dbAll = prom(db.all.bind(db));
  * @example
  * {
  *     sql: string,
- *     parameters: {
- *       parameterName: parameterValue,
- *     },
+ *     args: object,
  * }
  */
 exports.sendQuery = function sendQuery(query) {
-        const parametersWithPrefix = helpers.prefixKeys(query.parameters, '$');
+    const parametersWithPrefix = helpers.prefixKeys(query.parameters, '$');
 
-        return db.all(query.sql, parametersWithPrefix)
-            .then(rows => rows)
-            .catch(error => {
-                console.error('Failed query: \n\n'
-                    query.sql +
-                    '\n\n' +
-                    'Parameters: \n\n' +
-                    JSON.stringify(parametersWithPrefix) +
-                    '\n\n'
+    return dbAll(query.sql, parametersWithPrefix)
+        .then(rows => rows)
+        .catch(error => {
+            console.error(
+                'Failed query: \n\n' +
+                query.sql +
+                '\n\n' +
+                'Parameters: \n\n' +
+                JSON.stringify(parametersWithPrefix) +
+                '\n\n'
+            );
 
-                    throw error;
-                );
-            });
-    });
+            throw error;
+        });
 };
