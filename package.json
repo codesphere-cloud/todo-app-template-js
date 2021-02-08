@@ -4,13 +4,17 @@
   "description": "Todo App",
   "main": "index.js",
   "scripts": {
-    "start": "NODE_PATH=. node server/index"
+    "start": "NODE_PATH=. node server/index",
+    "watch": "NODE_PATH=. nodemon server/index"
   },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/codesphere-cloud/todo-app-template-js.git"
   },
-  "keywords": ["todo", "template"],
+  "keywords": [
+    "todo",
+    "template"
+  ],
   "author": "Roman Frolov",
   "license": "ISC",
   "dependencies": {
@@ -21,6 +25,7 @@
     "sqlite3": "^5.0.1"
   },
   "devDependencies": {
-    "eslint": "^7.19.0"
+    "eslint": "^7.19.0",
+    "nodemon": "^2.0.7"
   }
 }
