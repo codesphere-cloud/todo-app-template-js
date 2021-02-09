@@ -29,18 +29,18 @@ const dbAll = prom(db.all.bind(db));
  *     args: object,
  * }
  */
-exports.sendQuery = function sendQuery(query) {
-    const parametersWithPrefix = helpers.prefixKeys(query.parameters, '$');
+exports.query = function query(query) {
+    const argsWithPrefix = helpers.prefixKeys(query.args, '$');
 
-    return dbAll(query.sql, parametersWithPrefix)
+    return dbAll(query.sql, argsWithPrefix)
         .then(rows => rows)
         .catch(error => {
             console.error(
                 'Failed query: \n\n' +
                 query.sql +
                 '\n\n' +
-                'Parameters: \n\n' +
-                JSON.stringify(parametersWithPrefix) +
+                'Arguments: \n\n' +
+                JSON.stringify(argsWithPrefix) +
                 '\n\n'
             );
 

@@ -25,29 +25,33 @@ app.use('/', express.static(path.join(__dirname, '../client')));
 app.post('/tasks', async (req, res) => {
     const args = req.body;
 
-    return db.sendQuery({sql: queries.createTask, args})
-        .then(() => res.sendStatus(201));
+    return db.query({sql: queries.createTask, args})
+        .then(() => db.query({sql: queries.getLastTask}))
+        .then(rows => res.status(201).json(rows[0]));
 });
 
 app.get('/tasks', async (req, res) => {
-    const rows = await db.sendQuery({sql: queries.listTasks});
+    return db.query({sql: queries.listTasks})
+        .then(rows => res.status(200).json(rows));
+});
 
-    return res
-        .status(200)
-        .json(rows);
+app.post('/tasks/:id', async (req, res) => {
+    const {id} = req.params;
+
+    return db.query({sql: queries.toggleTask}, {id});
 });
 
 app.delete('/tasks/:id', async (req, res) => {
     const {id} = req.params;
 
-    return db.sendQuery({sql: queries.deleteTask, args: {id}})
+    return db.query({sql: queries.deleteTask, args: {id}})
         .then(() => res.sendStatus(200));
 });
 
 (async () => {
 
     // Create database tables.
-    await db.sendQuery({sql: queries.createTasksTable});
+    await db.query({sql: queries.createTasksTable});
 
     // Start the server.
     app.listen(config.API_PORT, () => {

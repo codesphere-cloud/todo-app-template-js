@@ -1,31 +1,29 @@
-/* global localStorage document */
+/* global document fetch */
 
 'use strict';
 
-let todoItems = [];
+let tasks = [];
 
-function renderTodo(todo) {
-    localStorage.setItem('todoItems', JSON.stringify(todoItems));
-
+function renderTodo(task) {
     const list = document.querySelector('.js-todo-list');
-    const item = document.querySelector(`[data-key='${todo.id}']`);
+    const item = document.querySelector(`[data-key='${task.id}']`);
 
-    if (todo.deleted) {
+    if (task.deleted) {
         item.remove();
-        if (todoItems.length === 0) {
+        if (tasks.length === 0) {
             list.innerHTML = '';
         }
         return;
     }
 
-    const isChecked = todo.checked ? 'done': '';
+    const isChecked = task.checked ? 'done': '';
     const node = document.createElement('li');
     node.setAttribute('class', `todo-item ${isChecked}`);
-    node.setAttribute('data-key', todo.id);
+    node.setAttribute('data-key', task.id);
     node.innerHTML = `
-        <input id="${todo.id}" type="checkbox"/>
-        <label for="${todo.id}" class="tick js-tick"></label>
-        <span>${todo.text}</span>
+        <input id="${task.id}" type="checkbox"/>
+        <label for="${task.id}" class="tick js-tick"></label>
+        <span>${task.text}</span>
         <button class="delete-todo js-delete-todo">
         <svg><use href="#delete-icon"></use></svg>
         </button>
@@ -38,31 +36,55 @@ function renderTodo(todo) {
     }
 }
 
-function addTodo(text) {
-    const todo = {
+async function addTodo(text) {
+    const body = {
         text,
         checked: false,
-        id: Date.now(),
     };
 
-    todoItems.push(todo);
-    renderTodo(todo);
+    const options = {
+        method: 'post',
+        headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(body),
+    };
+
+    const task = await (await fetch('/tasks', options)).json();
+
+    tasks.push(task);
+    renderTodo(task);
 }
 
-function toggleDone(key) {
-    const index = todoItems.findIndex(item => item.id === Number(key));
-    todoItems[index].checked = !todoItems[index].checked;
-    renderTodo(todoItems[index]);
+async function toggleDone(key) {
+    const index = tasks.findIndex(item => item.id === Number(key));
+    const task = tasks[index];
+    task.checked = !task.checked;
+    renderTodo(task);
+
+    const options = {
+        method: 'post',
+        headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({checked: task.checked}),
+    };
+
+    await fetch(`/tasks/${key}`, options);
 }
 
-function deleteTodo(key) {
-    const index = todoItems.findIndex(item => item.id === Number(key));
+async function deleteTodo(key) {
+    const index = tasks.findIndex(item => item.id === Number(key));
     const todo = {
         deleted: true,
-        ...todoItems[index]
+        ...tasks[index]
     };
-    todoItems = todoItems.filter(item => item.id !== Number(key));
+    tasks = tasks.filter(item => item.id !== Number(key));
     renderTodo(todo);
+
+    await fetch(`/tasks/${key}`, {method: 'delete'});
 }
 
 const form = document.querySelector('.js-form');
@@ -91,12 +113,7 @@ list.addEventListener('click', event => {
     }
 });
 
-document.addEventListener('DOMContentLoaded', () => {
-    const ref = localStorage.getItem('todoItems');
-    if (ref) {
-        todoItems = JSON.parse(ref);
-        todoItems.forEach(t => {
-            renderTodo(t);
-        });
-    }
+document.addEventListener('DOMContentLoaded', async () => {
+    tasks = await (await fetch('/tasks')).json();
+    tasks.forEach(t => renderTodo(t));
 });
