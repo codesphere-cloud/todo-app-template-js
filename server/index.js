@@ -38,7 +38,8 @@ app.get('/tasks', async (req, res) => {
 app.post('/tasks/:id', async (req, res) => {
     const {id} = req.params;
 
-    return db.query({sql: queries.toggleTask}, {id});
+    return db.query({sql: queries.toggleTask}, {id})
+        .then(() => res.sendStatus(200));
 });
 
 app.delete('/tasks/:id', async (req, res) => {
