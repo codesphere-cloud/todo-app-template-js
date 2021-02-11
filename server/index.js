@@ -37,8 +37,9 @@ app.get('/tasks', async (req, res) => {
 
 app.post('/tasks/:id', async (req, res) => {
     const {id} = req.params;
+    const {checked} = req.body;
 
-    return db.query({sql: queries.toggleTask}, {id})
+    return db.query({sql: queries.toggleTask, args: {id, checked}})
         .then(() => res.sendStatus(200));
 });
 

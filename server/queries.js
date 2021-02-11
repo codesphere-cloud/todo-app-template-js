@@ -27,7 +27,7 @@ exports.listTasks = `
 
 exports.toggleTask = `
     update tasks
-    set checked = !checked
+    set checked = $checked
     where id = $id
 `;
 

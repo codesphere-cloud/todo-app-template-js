@@ -37,18 +37,13 @@ function renderTodo(task) {
 }
 
 async function addTodo(text) {
-    const body = {
-        text,
-        checked: false,
-    };
-
     const options = {
         method: 'post',
         headers: {
             'Accept': 'application/json',
             'Content-Type': 'application/json',
         },
-        body: JSON.stringify(body),
+        body: JSON.stringify({text, checked: false}),
     };
 
     const task = await (await fetch('/tasks', options)).json();
@@ -60,6 +55,7 @@ async function addTodo(text) {
 async function toggleDone(key) {
     const index = tasks.findIndex(item => item.id === Number(key));
     const task = tasks[index];
+
     task.checked = !task.checked;
     renderTodo(task);
 
