@@ -60,7 +60,7 @@ app.delete('/tasks/:id', async (req, res) => {
         let appUrl;
 
         if (process.env.CODESPHERE_APP_ID) {
-            appUrl = `https://${process.env.CODESPHERE_APP_ID}-${config.API_PORT}.codesphere.cloud/`;
+            appUrl = `https://${process.env.CODESPHERE_APP_ID}-${config.API_PORT}.codesphere.com/`;
         } else {
             appUrl= `http://localhost:${config.API_PORT}/`;
         }
