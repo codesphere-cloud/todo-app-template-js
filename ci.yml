@@ -1,0 +1,17 @@
+prepare:
+  # Put your commands here.
+  steps:
+  - name: "Install dependencies"
+    command: "npm ci"
+
+test:
+  # Put your commands here.
+  steps:
+  - name: "Unit Tests"
+    command: "yarn test --watchAll=false --passWithNoTests"
+
+run:
+  # Put your commands here.
+  steps:
+  - name: "Run"
+    command: "npm start"
