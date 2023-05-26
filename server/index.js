@@ -2,16 +2,12 @@
 
 const path       = require('path');
 const express    = require('express');
-const helmet     = require('helmet');
 const bodyParser = require('body-parser');
 const config     = require('server/config');
 const db         = require('server/db');
 const queries    = require('server/queries');
 
 const app = module.exports = express();
-
-// It's best to use Helmet early in your middleware stack so that its headers are sure to be set.
-app.use(helmet());
 
 // Body parsing middleware.
 app.use(bodyParser.json());
