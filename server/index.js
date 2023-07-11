@@ -57,14 +57,10 @@ app.delete('/tasks/:id', async (req, res) => {
 
     // Start the server.
     app.listen(config.API_PORT, () => {
-        let appUrl;
-
-        if (process.env.CODESPHERE_APP_ID) {
-            appUrl = `https://${process.env.CODESPHERE_APP_ID}-${config.API_PORT}.codesphere.com/`;
-        } else {
-            appUrl= `http://localhost:${config.API_PORT}/`;
-        }
-
+        const appUrl = process.env.WORKSPACE_DEV_DOMAIN
+            ? `https://${process.env.WORKSPACE_DEV_DOMAIN}/`
+            : `http://localhost:${config.API_PORT}/`;
+        
         console.info(`Ready! Follow the link to open your app: ${appUrl}`);
     });
 
