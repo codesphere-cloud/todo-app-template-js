@@ -1,17 +1,21 @@
+schemaVersion: v0.2
 prepare:
-  # Put your commands here.
   steps:
-  - name: "Install dependencies"
-    command: "npm ci"
-
+    - name: Install dependencies
+      command: npm ci
 test:
-  # Put your commands here.
-  steps:
-  - name: "Unit Tests"
-    command: "yarn test --watchAll=false --passWithNoTests"
-
+  steps: []
 run:
-  # Put your commands here.
-  steps:
-  - name: "Run"
-    command: "npm start"
+  app:
+    plan: 202
+    replicas: 1
+    network:
+      ports:
+        - port: 3000
+          isPublic: false
+      paths:
+        - port: 3000
+          path: /
+    steps:
+      - name: Run
+        command: npm start
